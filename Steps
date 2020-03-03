@@ -1,0 +1,12 @@
+sudo apt install apache2 mysql-client mysql-server php libapache2-mod-php
+sudo apt install php7.2-mysql
+sudo service apache2 restart
+sudo mysql -u root -p
+CREATE DATABASE catalyst DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON catalyst.* TO catalystuser@localhost IDENTIFIED BY 'Catalyst2020%';
+use catalyst;
+CREATE TABLE IF NOT EXISTS users (name VARCHAR(255) PRIMARY KEY, surname VARCHAR(255) NOT NULL, email VARCHAR(255));
+insert into users values ('Naty','Mena','nmena06@gmail.com');
+quit;
+vi user_upload.php
+php user_upload.php

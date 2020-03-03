@@ -1,40 +1,88 @@
 <?php
 
 	// Database information
-	$user = "catalystuser";
-	$password = "Catalyst2020%";
+	$dbuser = "root";
+	$dbpassword = "";
 	$server = "localhost";
-	$database = "catalyst";
+	$user = "catalystuserv9";
+	$password = "Catalyst2020%";
+	$database = "catalystv9";
 
-	// create the connection with mysql_connect()
-	$connect = mysqli_connect( $server, $user, $password ) or die ("Error. No connection to the database server");
+  // Creating a connection
+  $conn = new mysqli($server, $dbuser, $dbpassword);
+  // Check connection
+  if ($conn->connect_error) {
+      die("Error. Connection failed: " . $conn->connect_error);
+  }
+  // Creating a database named catalystv4
+  $sql = "CREATE DATABASE ".$database." DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  if ($conn->query($sql) === TRUE) {
+      echo "Database created successfully with the name catalistv4 <br>";
+  } else {
+      echo "Error. Error creating database: " . $conn->error;
+  }
 
-	// select the database
-	$db = mysqli_select_db( $connect, $database ) or die ( "Error. Database connection." );
 
 
-	// establecer y realizar consulta. guardamos en variable.
-		$querty = "SELECT * FROM users";
-		$result = mysqli_query( $connect, $querty ) or die ( "Error. Query error.");
+  // Creating a user named catalystuserv4
+  $sql = "create user '".$user."'@'localhost' IDENTIFIED BY '".$password."';";
+  if ($conn->query($sql) === TRUE) {
+      echo "Database user created successfully with the name catalystuserv4 <br>";
+  } else {
+      echo "Error. Error creating database user: " . $conn->error;
+  }
 
-		// Show users
-			echo "<table borde='2'>";
-			echo "<tr>";
-			echo "<th>name</th>";
-			echo "<th>surname</th>";
-			echo "<th>email</th>";
-			echo "</tr>";
+  // Grant access to user
+  $sql = "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,CREATE TEMPORARY TABLES,DROP,INDEX,ALTER ON ".$database.".* TO ".$user."@localhost IDENTIFIED BY '".$password."';";
+  if ($conn->query($sql) === TRUE) {
+      echo "Grant successfully with the name catalystuserv4 <br>";
+  } else {
+      echo "Error. Error grant user: " . $conn->error;
+  }
 
-			// while there are records in the users table
-			while ($colum = mysqli_fetch_array( $result ))
-			{
-				echo "<tr>";
-				echo "<td>" . $colum['name'] . "</td><td>" . $colum['surname'] . "</td><td>" . $colum['email'] . "</td>";
-				echo "</tr>";
-			}
+  // Use database catalystuserv4
+  $sql = "use ".$database.";";
+  if ($conn->query($sql) === TRUE) {
+      echo "Using database catalystuserv4 <br>";
+  } else {
+      echo "Error. Error using database: " . $conn->error;
+  }
 
-			echo "</table>"; // Fin de la tabla
+  // Create table users
+  $sql = "CREATE TABLE if not exists users (
+  name VARCHAR(255) NOT NULL,
+  surname VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL PRIMARY KEY
+  )";
 
-  // cerrar conexión de base de datos
-  mysqli_close( $connect );
+  if ($conn->query($sql) === TRUE) {
+      echo "Table users created successfully<br>";
+  } else {
+      echo "Error creating table: " . $conn->error;
+  }
+  // insert users (testing)
+  $sql = "insert into users values ('Naty','Mena','nmena06@gmail.com');";
+
+  if ($conn->query($sql) === TRUE) {
+      echo "Test user inserted successfully<br>";
+  } else {
+      echo "Error inserting user: " . $conn->error;
+  }
+
+  // select users
+  $sql = "SELECT name, surname, email FROM users";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows > 0) {
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+          echo "Name: " . $row["name"]. " - Surname: " . $row["surname"]. " - Email: " . $row["email"]. "<br>";
+      }
+  } else {
+      echo "0 results";
+  }
+
+
+  // Close connection
+  $conn->close();
 ?>
